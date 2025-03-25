@@ -8,6 +8,21 @@ import keys
 WORKSHOP = "steamapps/workshop/content/107410/"
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"  # noqa: E501
 
+def rename_to_lowercase(root_dir):
+    for dirpath, dirnames, filenames in os.walk(root_dir, topdown=False):
+        # Rename files
+        for filename in filenames:
+            src = os.path.join(dirpath, filename)
+            dst = os.path.join(dirpath, filename.lower())
+            if src != dst and not os.path.exists(dst):
+                os.rename(src, dst)
+
+        # Rename directories
+        for dirname in dirnames:
+            src = os.path.join(dirpath, dirname)
+            dst = os.path.join(dirpath, dirname.lower())
+            if src != dst and not os.path.exists(dst):
+                os.rename(src, dst)
 
 def download(mods):
     steamcmd = ["/steamcmd/steamcmd.sh"]
@@ -42,4 +57,5 @@ def preset(mod_file):
         download(mods)
         for moddir in moddirs:
             keys.copy(moddir)
+        rename_to_lowercase(WORKSHOP)
     return moddirs
