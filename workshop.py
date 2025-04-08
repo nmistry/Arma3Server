@@ -24,14 +24,20 @@ def rename_to_lowercase(root_dir):
             if src != dst and not os.path.exists(dst):
                 os.rename(src, dst)
 
+def chunk(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
 def download(mods):
-    steamcmd = ["/steamcmd/steamcmd.sh"]
-    steamcmd.extend(["+force_install_dir", "/arma3"])
-    steamcmd.extend(["+login", os.environ["STEAM_USER"], os.environ["STEAM_PASSWORD"]])
-    for id in mods:
-        steamcmd.extend(["+workshop_download_item", "107410", id])
-    steamcmd.extend(["+quit"])
-    subprocess.call(steamcmd)
+    for batch in chunk(mods,5):
+        print("Downloading workshopmods batch: ", batch)
+        steamcmd = ["/steamcmd/steamcmd.sh"]
+        steamcmd.extend(["+force_install_dir", "/arma3"])
+        steamcmd.extend(["+login", os.environ["STEAM_USER"], os.environ["STEAM_PASSWORD"]])
+        for id in batch:
+            steamcmd.extend(["+workshop_download_item", "107410", id])
+        steamcmd.extend(["+quit"])
+        subprocess.call(steamcmd)
 
 
 def preset(mod_file):
