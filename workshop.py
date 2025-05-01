@@ -5,6 +5,8 @@ import urllib.request
 
 import keys
 
+WORKSHOP_SKIP_DOWNLOAD = os.getenv('WORKSHOP_SKIP_DOWNLOAD', False)
+    
 WORKSHOP = "steamapps/workshop/content/107410/"
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.47 Safari/537.36"  # noqa: E501
 
@@ -60,8 +62,9 @@ def preset(mod_file):
             mods.append(match.group(1))
             moddir = WORKSHOP + match.group(1)
             moddirs.append(moddir)
-        download(mods)
-        for moddir in moddirs:
-            keys.copy(moddir)
-        rename_to_lowercase(WORKSHOP)
+        if not WORKSHOP_SKIP_DOWNLOAD:
+            download(mods)
+            for moddir in moddirs:
+                keys.copy(moddir)
+            rename_to_lowercase(WORKSHOP)
     return moddirs
